@@ -20,10 +20,11 @@ if (!isPostHogConfigured) {
 
 // Memory fallback to prevent "window is not defined" during Expo SSR
 const memoryStorage: Record<string, string> = {}
+const isSSR = typeof window === 'undefined'
 
 const safeStorage = {
   getItem: async (key: string) => {
-    if (Platform.OS === 'web' && typeof window === 'undefined') {
+    if (isSSR) {
       return memoryStorage[key] ?? null
     }
     try {
@@ -33,7 +34,7 @@ const safeStorage = {
     }
   },
   setItem: async (key: string, value: string) => {
-    if (Platform.OS === 'web' && typeof window === 'undefined') {
+    if (isSSR) {
       memoryStorage[key] = value
       return
     }
